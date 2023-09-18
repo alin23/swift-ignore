@@ -10,12 +10,11 @@ let package = Package(
 	dependencies: [],
 	targets: [
 		.binaryTarget(
-			name: "RustXcframework",
-			path: "RustXcframework.xcframework"
+			name: "IgnoreRustXcframework",
+			path: "IgnoreRustXcframework.xcframework"
 		),
 		.target(
 			name: "Ignore",
-			dependencies: ["RustXcframework"])
+			dependencies: ["IgnoreRustXcframework"])
 	]
 )
-	
