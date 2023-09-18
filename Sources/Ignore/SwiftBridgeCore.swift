@@ -1,4 +1,4 @@
-import RustXcframework
+import IgnoreRust
 import Foundation
 
 extension RustString {

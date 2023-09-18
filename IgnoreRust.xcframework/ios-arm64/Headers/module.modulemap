@@ -1,4 +1,4 @@
-module RustXcframework {
+module IgnoreRust {
     header "SwiftBridgeCore.h"
     header "ignore.h"
     export *
