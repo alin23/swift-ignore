@@ -1,4 +1,5 @@
 import IgnoreRust
+
 public func check_if_ignored<GenericToRustStr: ToRustStr>(_ path: GenericToRustStr, _ ignore_file: GenericToRustStr) -> Bool {
     ignore_file.toRustStr { ignore_fileAsRustStr in
         path.toRustStr { pathAsRustStr in
