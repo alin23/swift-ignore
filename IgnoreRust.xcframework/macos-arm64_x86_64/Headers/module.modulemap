@@ -1,0 +1,5 @@
+module IgnoreRust {
+    header "libIgnore/SwiftBridgeCore.h"
+    header "libIgnore/ignore.h"
+    export *
+}
