@@ -36,10 +36,6 @@ public protocol IntoRustString {
     func intoRustString() -> RustString;
 }
 
-public protocol ToRustStr {
-    func toRustStr<T> (_ withUnsafeRustStr: (RustStr) -> T) -> T;
-}
-
 extension String: IntoRustString {
     public func intoRustString() -> RustString {
         // TODO: When passing an owned Swift std String to Rust we've being wasteful here in that
@@ -71,6 +67,19 @@ func optionalStringIntoRustString<S: IntoRustString>(_ string: Optional<S>) -> R
     } else {
         return nil
     }
+}
+
+/// Used to safely get a pointer to a sequence of utf8 bytes, represented as a `RustStr`.
+///
+/// For example, the Swift `String` implementation of the `ToRustStr` protocol does the following:
+/// 1. Use Swift's `String.utf8.withUnsafeBufferPointer` to get a pointer to the strings underlying
+///    utf8 bytes.
+/// 2. Construct a `RustStr` that points to these utf8 bytes. This is safe because `withUnsafeBufferPointer`
+///    guarantees that the buffer pointer will be valid for the duration of the `withUnsafeBufferPointer`
+///    callback.
+/// 3. Pass the `RustStr` to the closure that was passed into `RustStr.toRustStr`.
+public protocol ToRustStr {
+    func toRustStr<T> (_ withUnsafeRustStr: (RustStr) -> T) -> T;
 }
 
 extension String: ToRustStr {
@@ -856,6 +865,11 @@ protocol SwiftBridgeGenericFreer {
 
 protocol SwiftBridgeGenericCopyTypeFfiRepr {}
 
+public struct __private__UncheckedSendable<T>: @unchecked Sendable {
+    public let value: T
+    @inlinable public init(_ value: T) { self.value = value }
+}
+
 public class RustString: RustStringRefMut {
     var isOwned: Bool = true
 
@@ -869,6 +883,25 @@ public class RustString: RustStringRefMut {
         }
     }
 }
+
+/// Tested in:
+///   SwiftRustIntegrationTestRunner/SwiftRustIntegrationTestRunnerTests/ResultTests.swift:
+///  `func testSwiftCallRustReturnsResultString()`
+extension RustString: Error {}
+
+// THREAD SAFETY: `RustString`, `RustStringRef` and `RustStringRefMut` are safe to send across threads as long as the
+// ownership and aliasing rules are followed.
+// This is because the underlying Rust `std::string::String`, `&str` and `&mut str` are all `Send+Sync`.
+// See the `Safety` chapter in the book for more information about memory and thread safety rules.
+//
+// For now we have implemented `Sendable` for `RustString`. If users need `RustStringRef` or `RustStringRefMut` to
+// implement `Sendable` then we can implement those as well.
+//
+// Tested in:
+//  `SwiftRustIntegrationTestRunner/SwiftRustIntegrationTestRunnerTests/SendableTests.swift`
+//  `func testSendableRustString()`
+extension RustString: @unchecked Sendable {}
+
 extension RustString {
     public convenience init() {
         self.init(ptr: __swift_bridge__$RustString$new())
@@ -953,6 +986,7 @@ extension RustString: Vectorizable {
         __swift_bridge__$Vec_RustString$len(vecPtr)
     }
 }
+
 
 public class __private__RustFnOnceCallbackNoArgsNoRet {
     var ptr: UnsafeMutableRawPointer
