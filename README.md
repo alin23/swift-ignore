@@ -109,7 +109,7 @@ paths.filterIgnored(in: ignoreFile, separator: "\n", bustCache: true)
 From `crates/ignore`:
 
 ```bash
-./build.sh release
+./build.sh
 ```
 
 This builds the Rust library for both x86_64 and aarch64, creates a universal binary with `lipo`, and packages it into the xcframework with `swift-bridge-cli`. Requires Rust, `swift-bridge-cli`, and `swiftformat`.
