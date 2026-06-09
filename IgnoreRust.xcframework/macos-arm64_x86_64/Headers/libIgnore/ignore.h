@@ -2,6 +2,8 @@
 #include <stdbool.h>
 bool __swift_bridge__$check_if_ignored(struct RustStr path, struct RustStr ignore_file, bool bust_cache);
 void* __swift_bridge__$check_if_ignored_batch(struct RustStr paths, struct RustStr ignore_file, struct RustStr separator, bool bust_cache);
+bool __swift_bridge__$check_if_ignored_rooted(struct RustStr path, struct RustStr ignore_file, struct RustStr root, bool bust_cache);
+void* __swift_bridge__$check_if_ignored_batch_rooted(struct RustStr paths, struct RustStr ignore_file, struct RustStr root, struct RustStr separator, bool bust_cache);
 void __swift_bridge__$bust_gitignore_cache(void);
 
 

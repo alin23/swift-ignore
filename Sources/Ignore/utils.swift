@@ -12,6 +12,17 @@ public extension String {
     func isIgnored(in ignore_file: URL, bustCache: Bool = false) -> Bool {
         check_if_ignored(self, ignore_file.path, bustCache)
     }
+
+    /// Match against an ignore file whose patterns are anchored at `root` rather than the file's own
+    /// directory. Use when the ignore file lives outside the tree it describes (e.g. a cache dir for an
+    /// ignore file that should match paths under `/Applications`).
+    func isIgnored(in ignore_file: String, root: String, bustCache: Bool = false) -> Bool {
+        check_if_ignored_rooted(self, ignore_file, root, bustCache)
+    }
+    @available(macOS 12, *)
+    func isIgnored(in ignore_file: FilePath, root: String, bustCache: Bool = false) -> Bool {
+        check_if_ignored_rooted(self, ignore_file.string, root, bustCache)
+    }
 }
 
 @available(macOS 12, *)
